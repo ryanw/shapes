@@ -36,18 +36,22 @@ export default class Scene {
 
   addShape(shape: Shape) {
     this.shapes.push(shape);
-    this.redraw();
+    this.render();
   }
 
-  redraw() {
-    this.clear();
+  render() {
     const context = this.canvas.getContext('2d');
 
     if (!context) {
       throw new Error("Unable to get 2D Context");
     }
 
-    this.shapes.forEach(shape => shape.draw(context));
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.shapes.forEach(shape => shape.render(context));
+  }
+
+  getShape(index: number): Shape | undefined {
+    return this.shapes[index];
   }
 
   clear() {
