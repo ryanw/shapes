@@ -1,0 +1,46 @@
+{
+  "name": "shapes",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Ryan Williams <hello@ryan.nz>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "build": "webpack",
+    "serve": "webpack-dev-server"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "enableTsDiagnostics": false
+      }
+    },
+    "rootDir": "src",
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    },
+    "setupFiles": [
+      "<rootDir>/__tests__/setup.ts"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
+    "testPathIgnorePatterns": [
+      "/dist/",
+      "/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "ts"
+    ]
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "awesome-typescript-loader": "^5.0.0",
+    "jest": "^22.4.3",
+    "source-map-loader": "^0.2.3",
+    "ts-jest": "^22.4.4",
+    "typescript": "^2.8.3",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.1.2",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
