@@ -15,6 +15,17 @@ export default class Rectangle extends Shape {
   }
 
   isPointInside(point: Point): boolean {
-    return false;
+    const { width, height } = this.size;
+    let { x, y } = this.position;
+    x -= this.pixelOrigin.x;
+    y -= this.pixelOrigin.y;
+
+
+    if (point.x < x) return false;
+    if (point.y < y) return false;
+    if (point.x > x + width) return false;
+    if (point.y > y + height) return false;
+
+    return true;
   }
 }

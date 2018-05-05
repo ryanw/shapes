@@ -60,6 +60,10 @@ export default class Scene {
   }
 
   highlightShape(shape: Shape | null) {
+    if (shape === this.highlightedShape) {
+      return;
+    }
+
     // Remove highlight from old shape
     if (this.highlightedShape) {
       this.highlightedShape.highlighted = false;
@@ -70,9 +74,14 @@ export default class Scene {
       shape.highlighted = true;
     }
     this.highlightedShape = shape;
+    this.render();
   }
 
   focusShape(shape: Shape | null) {
+    if (shape === this.focusedShape) {
+      return;
+    }
+
     // Remove focus from old shape
     if (this.focusedShape) {
       this.focusedShape.focused = false;
@@ -83,6 +92,7 @@ export default class Scene {
       shape.focused = true;
     }
     this.focusedShape = shape;
+    this.render();
   }
 
   clear() {

@@ -12,12 +12,12 @@ function main() {
   // TODO load from localStorage
 
   scene.addShape(new Rectangle({
-    position: { x: 76, y: 76 },
+    position: { x: 176, y: 176 },
     size: { width: 150, height: 150 },
   }));
 
   scene.addShape(new Star({
-    position: { x: 76, y: 76 },
+    position: { x: 176, y: 176 },
     radius: 75,
     points: 5,
   }));
@@ -43,11 +43,11 @@ function main() {
     shape.rotation += Math.sin(i) * 3;
 
     shape = scene.getShape(3);
-    shape.rotation += Math.abs(Math.sin(i)) * 10;
+    shape.rotation += Math.abs(Math.sin(i)) * 5;
 
     scene.render();
     i += 0.1;
-  }, 1000 / 30);
+  }, 1000000 / 30);
 }
 
 main();
