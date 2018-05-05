@@ -8,6 +8,8 @@ export interface ShapeProperties {
  * Base class for all shapes rendered in a Scene
  */
 export default class Shape {
+  public highlighted: boolean;
+  public focused: boolean;
   public position: Point;
   public size: Size;
   public rotation: Degrees;
@@ -18,12 +20,18 @@ export default class Shape {
     this.position = { x: 0, y: 0, ...props.position };
     this.size = { width: 100, height: 100, ...props.size };
     this.rotation = props.rotation || 0.0;
+    this.focused = false;
+    this.highlighted = true;
   }
 
   // Renders the shape to a canvas.
   render(ctx: CanvasRenderingContext2D) {
     ctx.save();
     this.applyTransform(ctx);
+    if (this.highlighted) {
+      ctx.strokeStyle = '#990';
+      ctx.lineWidth = 3;
+    }
     this.draw(ctx);
     ctx.restore();
   }

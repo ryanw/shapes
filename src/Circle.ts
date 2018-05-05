@@ -27,6 +27,9 @@ export default class Circle extends Shape {
     ctx.fillStyle = '#000099';
     ctx.arc(this.radius, this.radius, this.radius, 0, Math.PI * 2);
     ctx.fill();
+    if (this.highlighted || this.focused) {
+      ctx.stroke();
+    }
     ctx.closePath();
   }
 }

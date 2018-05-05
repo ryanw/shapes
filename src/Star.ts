@@ -42,5 +42,8 @@ export default class Star extends Shape {
     ctx.closePath();
     ctx.fillStyle = '#bb0000';
     ctx.fill();
+    if (this.highlighted || this.focused) {
+      ctx.stroke();
+    }
   }
 }

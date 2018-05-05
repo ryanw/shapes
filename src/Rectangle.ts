@@ -5,7 +5,11 @@ export default class Rectangle extends Shape {
     const { width, height } = this.size;
 
     ctx.fillStyle = '#009900';
-    ctx.fillRect(0, 0, width, height);
+    ctx.rect(0, 0, width, height);
+    ctx.fill();
+    if (this.highlighted || this.focused) {
+      ctx.stroke();
+    }
   }
 
   isPointInside(point: Point): boolean {
