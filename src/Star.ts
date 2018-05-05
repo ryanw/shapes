@@ -25,13 +25,13 @@ export default class Star extends Shape {
 
   draw(ctx: CanvasRenderingContext2D) {
     const { width, height } = this.size;
-    const { x: originX, y: originY } = this.pixelOrigin;
     const { radius, pointCount } = this;
     const innerRadius = radius / 2;
 
+    ctx.translate(innerRadius, innerRadius);
+
     // Draw our pretty star
     ctx.beginPath();
-    ctx.translate(originX, originY);
     ctx.moveTo(0, -radius);
     for (let i = 0; i < pointCount; i++){
       ctx.rotate(Math.PI / pointCount);

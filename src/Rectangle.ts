@@ -7,4 +7,8 @@ export default class Rectangle extends Shape {
     ctx.fillStyle = '#009900';
     ctx.fillRect(0, 0, width, height);
   }
+
+  isPointInside(point: Point): boolean {
+    return false;
+  }
 }

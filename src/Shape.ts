@@ -8,9 +8,9 @@ export interface ShapeProperties {
  * Base class for all shapes rendered in a Scene
  */
 export default class Shape {
-  protected position: Point;
-  protected size: Size;
-  protected rotation: Degrees;
+  public position: Point;
+  public size: Size;
+  public rotation: Degrees;
   protected origin: Point = { x: 0.5, y: 0.5 };
 
   constructor(props: ShapeProperties = {}) {
@@ -20,9 +20,20 @@ export default class Shape {
     this.rotation = props.rotation || 0.0;
   }
 
+  // Renders the shape to a canvas.
   render(ctx: CanvasRenderingContext2D) {
     ctx.save();
+    this.applyTransform(ctx);
+    this.draw(ctx);
+    ctx.restore();
+  }
 
+  // Draw the shape to the canvas. Override in the subclass to implement the custom drawing code.
+  // The position and rotation transform are applied automatically before this method is called.
+  draw(ctx: CanvasRenderingContext2D) {
+  }
+
+  private applyTransform(ctx: CanvasRenderingContext2D) {
     let { x, y } = this.position;
     const { width, height } = this.size;
     const { x: originX, y: originY } = this.pixelOrigin;
@@ -38,21 +49,11 @@ export default class Shape {
     ctx.translate(originX, originY);
     ctx.rotate(this.rotation * Math.PI / 180);
     ctx.translate(-originX, -originY);
-
-    this.draw(ctx);
-
-    ctx.restore();
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-  }
-
-  setRotation(rotation: Degrees) {
-    this.rotation = rotation;
-  }
-
-  getRotation(): Degrees {
-    return this.rotation;
+  // Test if a given coordinate is inside the shape
+  isPointInside(point: Point): boolean {
+    return false;
   }
 
   // Returns the pixel offset of the origin point
