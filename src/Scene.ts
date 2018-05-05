@@ -3,7 +3,9 @@ import Rectangle from './Rectangle';
 
 export default class Scene {
   private canvas: HTMLCanvasElement;
-  private shapes: Shape[] = [];
+  private shapes: Array<Shape> = [];
+  private focusedShape?: Shape;
+  private highlightedShape?: Shape;
 
   constructor(container?: HTMLElement) {
     this.canvas = document.createElement('canvas');
@@ -23,10 +25,14 @@ export default class Scene {
 
   addEventListeners() {
     window.addEventListener('resize', this.handleResize);
+    document.documentElement.addEventListener('mousemove', this.handleMouseMove);
+    document.documentElement.addEventListener('mousedown', this.handleMouseDown);
   }
 
   removeEventListeners() {
     window.removeEventListener('resize', this.handleResize);
+    document.documentElement.removeEventListener('mousemove', this.handleMouseMove);
+    document.documentElement.removeEventListener('mousedown', this.handleMouseDown);
   }
 
   updateSize() {
@@ -39,14 +45,13 @@ export default class Scene {
     this.render();
   }
 
+  shapeAtPoint(x: number, y: number): Shape | null {
+    return this.shapes.find(shape => shape.isPointInside({ x, y }));
+  }
+
   render() {
+    this.clear();
     const context = this.canvas.getContext('2d');
-
-    if (!context) {
-      throw new Error("Unable to get 2D Context");
-    }
-
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.shapes.forEach(shape => shape.render(context));
   }
 
@@ -54,11 +59,48 @@ export default class Scene {
     return this.shapes[index];
   }
 
+  highlightShape(shape: Shape | null) {
+    // Remove highlight from old shape
+    if (this.highlightedShape) {
+      this.highlightedShape.highlighted = false;
+    }
+
+    // Highlight new shape
+    if (shape) {
+      shape.highlighted = true;
+    }
+    this.highlightedShape = shape;
+  }
+
+  focusShape(shape: Shape | null) {
+    // Remove focus from old shape
+    if (this.focusedShape) {
+      this.focusedShape.focused = false;
+    }
+
+    // focus new shape
+    if (shape) {
+      shape.focused = true;
+    }
+    this.focusedShape = shape;
+  }
+
   clear() {
-    //TODO
+    const context = this.canvas.getContext('2d');
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   handleResize = (ev: Event) => {
     this.updateSize();
+  }
+
+  handleMouseMove = (ev: MouseEvent) => {
+    const { clientX: x, clientY: y } = ev;
+    this.highlightShape(this.shapeAtPoint(x, y));
+  }
+
+  handleMouseDown = (ev: MouseEvent) => {
+    const { clientX: x, clientY: y } = ev;
+    this.focusShape(this.shapeAtPoint(x, y));
   }
 }

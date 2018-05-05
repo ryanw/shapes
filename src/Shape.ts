@@ -21,17 +21,23 @@ export default class Shape {
     this.size = { width: 100, height: 100, ...props.size };
     this.rotation = props.rotation || 0.0;
     this.focused = false;
-    this.highlighted = true;
+    this.highlighted = false;
   }
 
   // Renders the shape to a canvas.
   render(ctx: CanvasRenderingContext2D) {
     ctx.save();
     this.applyTransform(ctx);
-    if (this.highlighted) {
-      ctx.strokeStyle = '#990';
+
+    if (this.focused) {
+      ctx.strokeStyle = '#f00';
       ctx.lineWidth = 3;
     }
+    else if (this.highlighted) {
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+    }
+
     this.draw(ctx);
     ctx.restore();
   }

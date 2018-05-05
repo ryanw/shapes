@@ -14,7 +14,7 @@ export default class Star extends Shape {
   constructor(props: StarProperties = {}) {
     const radius = props.radius || 100;
     super({
-      size: { width: radius, height: radius },
+      size: { width: radius * 2, height: radius * 2 },
       position: props.position,
       rotation: props.rotation,
     });
@@ -24,11 +24,10 @@ export default class Star extends Shape {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { width, height } = this.size;
     const { radius, pointCount } = this;
-    const innerRadius = radius / 2;
+    const innerRadius = radius / 2.5;
 
-    ctx.translate(innerRadius, innerRadius);
+    ctx.translate(radius, radius);
 
     // Draw our pretty star
     ctx.beginPath();
@@ -40,7 +39,7 @@ export default class Star extends Shape {
       ctx.lineTo(0, -radius);
     }
     ctx.closePath();
-    ctx.fillStyle = '#bb0000';
+    ctx.fillStyle = '#ffff00';
     ctx.fill();
     if (this.highlighted || this.focused) {
       ctx.stroke();

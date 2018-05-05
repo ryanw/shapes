@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "dist/",
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    "noImplicitAny": true,
+    "preserveConstEnums": false,
+    "declaration": false,
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es6", "dom"]
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
