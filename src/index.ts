@@ -13,7 +13,7 @@ function main() {
 
   scene.addShape(new Rectangle({
     position: { x: 576, y: 176 },
-    size: { width: 150, height: 150 },
+    size: { width: 350, height: 150 },
   }));
 
   scene.addShape(new Star({
@@ -29,7 +29,7 @@ function main() {
 
   scene.addShape(new Triangle({
     position: { x: 700, y: 700 },
-    size: { width: 150, height: 250 },
+    size: { width: 150, height: 450 },
   }));
 
   let i = 1;
@@ -47,7 +47,7 @@ function main() {
 
     scene.render();
     i += 0.1;
-  }, 1000 / 30);
+  }, 1000 / 60);
 }
 
 main();

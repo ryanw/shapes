@@ -2,12 +2,14 @@ export function isPointInsidePolygon(point: Point, polygon: Array<Point>): boole
   const { x, y } = point;
 
   let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+  for (let i = 0; i < polygon.length; i++) {
+    // Line between current and previous point. First point connects to last point.
+    const j = i === 0 ? polygon.length - 1 : i - 1;
     const { x: x1, y: y1 } = polygon[i];
     const { x: x2, y: y2 } = polygon[j];
 
     // Test if we intersect the line
-    const intersects = ((y1 > y) != (y2 > y)) && (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1);
+    const intersects = (y1 > y) != (y2 > y) && (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1);
     // Toggle whether we're inside or outside every time we hit a line
     if (intersects) {
       inside = !inside;

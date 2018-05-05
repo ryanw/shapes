@@ -19,15 +19,13 @@
     "transform": {
       "^.+\\.ts?$": "ts-jest"
     },
-    "setupFiles": [
-      "<rootDir>/__tests__/setup.ts"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
+    "testRegex": "\\.test\\.ts$",
     "testPathIgnorePatterns": [
       "/dist/",
       "/node_modules/"
     ],
     "moduleFileExtensions": [
+      "js",
       "ts"
     ]
   },
