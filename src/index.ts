@@ -47,7 +47,7 @@ function main() {
 
     scene.render();
     i += 0.1;
-  }, 1000000 / 30);
+  }, 1000 / 30);
 }
 
 main();

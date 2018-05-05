@@ -61,13 +61,17 @@ export default class Shape {
 
     // Offset to rotate around the origin of the shape
     ctx.translate(originX, originY);
-    ctx.rotate(this.rotation * Math.PI / 180);
+    ctx.rotate(this.rotationInRadians);
     ctx.translate(-originX, -originY);
   }
 
   // Test if a given coordinate is inside the shape
   isPointInside(point: Point): boolean {
     return false;
+  }
+
+  get rotationInRadians(): number {
+    return this.rotation * Math.PI / 180;
   }
 
   // Returns the pixel offset of the origin point

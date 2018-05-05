@@ -38,6 +38,7 @@ export default class Scene {
   updateSize() {
     this.canvas.width = this.canvas.clientWidth;
     this.canvas.height = this.canvas.clientHeight;
+    this.render();
   }
 
   addShape(shape: Shape) {

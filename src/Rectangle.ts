@@ -16,15 +16,21 @@ export default class Rectangle extends Shape {
 
   isPointInside(point: Point): boolean {
     const { width, height } = this.size;
-    let { x, y } = this.position;
-    x -= this.pixelOrigin.x;
-    y -= this.pixelOrigin.y;
+    const { x, y } = this.position;
+    const angle = -this.rotationInRadians;
+    let { x: px, y: py } = point;
 
+    // Transform the point so it matches the shape
+    px -= x;
+    py -= y;
+    const tx = px * Math.cos(angle) - py * Math.sin(angle) + this.pixelOrigin.x + x;
+    const ty = px * Math.sin(angle) + py * Math.cos(angle) + this.pixelOrigin.y + y;
 
-    if (point.x < x) return false;
-    if (point.y < y) return false;
-    if (point.x > x + width) return false;
-    if (point.y > y + height) return false;
+    // Simple rectangle test
+    if (tx < x) return false;
+    if (ty < y) return false;
+    if (tx > x + width) return false;
+    if (ty > y + height) return false;
 
     return true;
   }
