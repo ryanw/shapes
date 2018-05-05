@@ -34,9 +34,9 @@ export default class Circle extends Shape {
   }
 
   isPointInside(point: Point): boolean {
-    let { x, y } = this.position;
-    x -= point.x;
-    y -= point.y;
+    let { x, y } = this.pointToLocalSpace(point);
+    x -= this.radius - this.pixelOrigin.x;
+    y -= this.radius - this.pixelOrigin.y;
 
     const length = Math.sqrt(x * x + y * y);
     return length < this.radius;

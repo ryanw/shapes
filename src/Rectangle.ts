@@ -1,4 +1,5 @@
 import Shape from './Shape';
+import { rotatePoint } from './geom';
 
 export default class Rectangle extends Shape {
   draw(ctx: CanvasRenderingContext2D) {
@@ -16,21 +17,15 @@ export default class Rectangle extends Shape {
 
   isPointInside(point: Point): boolean {
     const { width, height } = this.size;
-    const { x, y } = this.position;
     const angle = -this.rotationInRadians;
-    let { x: px, y: py } = point;
+    let { x, y } = this.pointToLocalSpace(point);
+    x += this.pixelOrigin.x;
+    y += this.pixelOrigin.y;
 
-    // Transform the point so it matches the shape
-    px -= x;
-    py -= y;
-    const tx = px * Math.cos(angle) - py * Math.sin(angle) + this.pixelOrigin.x + x;
-    const ty = px * Math.sin(angle) + py * Math.cos(angle) + this.pixelOrigin.y + y;
-
-    // Simple rectangle test
-    if (tx < x) return false;
-    if (ty < y) return false;
-    if (tx > x + width) return false;
-    if (ty > y + height) return false;
+    if (x < 0) return false;
+    if (y < 0) return false;
+    if (x > width) return false;
+    if (y > height) return false;
 
     return true;
   }

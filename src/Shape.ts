@@ -1,3 +1,5 @@
+import { rotatePoint } from './geom';
+
 export interface ShapeProperties {
   position?: Point;
   size?: Size;
@@ -34,7 +36,7 @@ export default class Shape {
       ctx.lineWidth = 3;
     }
     else if (this.highlighted) {
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = '#0f0';
       ctx.lineWidth = 3;
     }
 
@@ -68,6 +70,14 @@ export default class Shape {
   // Test if a given coordinate is inside the shape
   isPointInside(point: Point): boolean {
     return false;
+  }
+
+  pointToLocalSpace(point: Point): Point {
+    let { x, y } = rotatePoint(point, this.position, -this.rotationInRadians);
+    x -= this.position.x;
+    y -= this.position.y;
+
+    return { x, y };
   }
 
   get rotationInRadians(): number {

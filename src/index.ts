@@ -12,7 +12,7 @@ function main() {
   // TODO load from localStorage
 
   scene.addShape(new Rectangle({
-    position: { x: 176, y: 176 },
+    position: { x: 576, y: 176 },
     size: { width: 150, height: 150 },
   }));
 
