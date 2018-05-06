@@ -31,20 +31,24 @@ export default class Shape {
     ctx.save();
     this.applyTransform(ctx);
 
+    // Change outline colour of select/hovered shapes
     if (this.focused) {
-      ctx.strokeStyle = '#f00';
       ctx.lineWidth = 3;
+      ctx.strokeStyle = '#0ff';
     }
-    else if (this.highlighted) {
-      ctx.strokeStyle = '#0f0';
-      ctx.lineWidth = 3;
+    if (this.highlighted) {
+      ctx.lineWidth = 6;
+      if (!this.focused) {
+        ctx.strokeStyle = '#0f0';
+      }
     }
 
     this.draw(ctx);
     ctx.restore();
   }
 
-  // Draw the shape to the canvas. Override in the subclass to implement the custom drawing code.
+  // Draw the shape to the canvas.
+  // Override in the subclass to implement the custom drawing code.
   // The position and rotation transform are applied automatically before this method is called.
   draw(ctx: CanvasRenderingContext2D) {
   }
