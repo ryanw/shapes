@@ -8,6 +8,8 @@ export default class Scene {
   private shapes: Array<Shape> = [];
   private focusedShape?: Shape;
   private highlightedShape?: Shape;
+  private dragging: boolean = false;
+  private prevMousePoint?: Point;
   private rotateControl: Handle;
   private scaleControl: Handle;
   private startSize: Size;
@@ -57,12 +59,14 @@ export default class Scene {
     window.addEventListener('resize', this.handleResize);
     document.documentElement.addEventListener('mousemove', this.handleMouseMove);
     document.documentElement.addEventListener('mousedown', this.handleMouseDown);
+    document.documentElement.addEventListener('mouseup', this.handleMouseUp);
   }
 
   removeEventListeners() {
     window.removeEventListener('resize', this.handleResize);
     document.documentElement.removeEventListener('mousemove', this.handleMouseMove);
     document.documentElement.removeEventListener('mousedown', this.handleMouseDown);
+    document.documentElement.removeEventListener('mouseup', this.handleMouseUp);
   }
 
   showHandles() {
@@ -173,12 +177,26 @@ export default class Scene {
 
   handleMouseMove = (ev: MouseEvent) => {
     const { clientX: x, clientY: y } = ev;
-    this.highlightShape(this.shapeAtPoint(x, y));
+    if (this.dragging && this.focusedShape) {
+      const delta = { x: x - this.prevMousePoint.x, y: y - this.prevMousePoint.y };
+      this.focusedShape.position.x += delta.x;
+      this.focusedShape.position.y += delta.y;
+      this.render();
+    } else {
+      this.highlightShape(this.shapeAtPoint(x, y));
+    }
+    this.prevMousePoint = { x, y };
   }
 
   handleMouseDown = (ev: MouseEvent) => {
     const { clientX: x, clientY: y } = ev;
     this.focusShape(this.shapeAtPoint(x, y));
+    this.dragging = true;
+    this.prevMousePoint = { x, y };
+  }
+
+  handleMouseUp = (ev: MouseEvent) => {
+    this.dragging = false;
   }
 
   handleStartRotate = (ev: HandleEvent) => {
