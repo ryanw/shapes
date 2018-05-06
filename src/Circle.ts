@@ -22,8 +22,7 @@ export default class Circle extends Shape {
   }
 
   set radius(r: number) {
-    this.size.width = r * 2;
-    this.size.height = r * 2;
+    this.size = { width: r * 2, height: r * 2 };
   }
 
   draw(ctx: CanvasRenderingContext2D) {
