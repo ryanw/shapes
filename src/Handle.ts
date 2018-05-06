@@ -1,6 +1,8 @@
 
 export interface HandleEvent {
   delta?: Point;
+  mouseX: number;
+  mouseY: number;
 }
 
 export type HandleCallback = (ev: HandleEvent) => void;
@@ -77,7 +79,7 @@ export default class Handle {
 
     this._startMousePoint = { x: ev.clientX, y: ev.clientY };
     if (this.startCallback) {
-      this.startCallback({});
+      this.startCallback({ mouseX: ev.clientX, mouseY: ev.clientY });
     }
   }
 
@@ -87,7 +89,7 @@ export default class Handle {
       y: ev.clientY - this._startMousePoint.y,
     }
     if (this.dragCallback) {
-      this.dragCallback({ delta });
+      this.dragCallback({ delta, mouseX: ev.clientX, mouseY: ev.clientY });
     }
   }
 
@@ -97,7 +99,7 @@ export default class Handle {
 
     this._startMousePoint = null;
     if (this.endCallback) {
-      this.endCallback({});
+      this.endCallback({ mouseX: ev.clientX, mouseY: ev.clientY });
     }
   }
 }

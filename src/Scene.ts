@@ -184,10 +184,36 @@ export default class Scene {
   handleStartRotate = (ev: HandleEvent) => {
     const shape = this.focusedShape;
     if (!shape) return;
-    this.startRotation = shape.rotation;
+    this.startRotation = shape.rotationInRadians;
   }
 
   handleDragRotate = (ev: HandleEvent) => {
+    const { delta, mouseX, mouseY } = ev;
+    if (!delta) return;
+
+    const shape = this.focusedShape;
+    if (!shape) return;
+
+    // Find the angle we've dragged
+
+    // Make a triangle from pivot, start mouse position, and current mouse position.
+    const pa = shape.position;
+    const pb = { x: mouseX - delta.x, y: mouseY - delta.y };
+    const pc = { x: mouseX, y: mouseY };
+
+    // Length of sides
+    const a = geom.distance(pa, pb);
+    const b = geom.distance(pb, pc);
+    const c = geom.distance(pc, pa);
+
+    // Angle opposite point 'b'
+    let angle = Math.acos((c * c + a * a - b * b) / (2 * c * a));
+    if (delta.y > delta.x) {
+      angle = -angle;
+    }
+    shape.rotationInRadians = this.startRotation + angle;
+
+    this.render();
   }
 
   handleEndRotate = (ev: HandleEvent) => {

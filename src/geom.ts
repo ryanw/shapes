@@ -28,3 +28,12 @@ export function rotatePoint(point: Point, pivot: Point, angle: number): Point {
 
   return { x: tx, y: ty };
 }
+
+export function length(point: Point): number {
+  return Math.sqrt(point.x * point.x + point.y * point.y);
+}
+
+
+export function distance(a: Point, b: Point): number {
+  return length({ x: a.x - b.x, y: a.y - b.y });
+}

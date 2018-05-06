@@ -88,6 +88,10 @@ export default class Shape {
     return this.rotation * Math.PI / 180;
   }
 
+  set rotationInRadians(angle: number) {
+    this.rotation = angle / (Math.PI / 180);
+  }
+
   // Returns the pixel offset of the origin point
   get pixelOrigin(): Point {
     const { width, height } = this.size;
