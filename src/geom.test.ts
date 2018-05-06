@@ -145,3 +145,34 @@ describe('geom.isPointInsidePolygon', () => {
     expect(hit).toBe(false);
   });
 });
+
+describe('geom.length', () => {
+  it('returns the correct length', () => {
+    const vector = { x: 4, y: 3 };
+    const length = geom.length(vector);
+    expect(length).toBe(5);
+  });
+});
+
+describe('geom.distance', () => {
+  it('returns the correct distance', () => {
+    const point1 = { x: 2, y: 3 };
+    const point2 = { x: 12, y: 5 };
+    const length = geom.distance(point1, point2);
+    expect(length).toBeCloseTo(10.198, 3);
+  });
+});
+
+describe('geom.angleInTriangle', () => {
+  it ('returns the correct angle for each point', () => {
+    const triangle = [
+      { x: 3, y: 3 },
+      { x: 6, y: 6 },
+      { x: 7, y: 4 },
+    ]
+
+    expect(geom.angleInTriangle(triangle, 0)).toBeCloseTo(1.35, 2);
+    expect(geom.angleInTriangle(triangle, 1)).toBeCloseTo(0.54, 2);
+    expect(geom.angleInTriangle(triangle, 2)).toBeCloseTo(-1.25, 2);
+  });
+});

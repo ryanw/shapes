@@ -230,16 +230,7 @@ export default class Scene {
     const pb = start;
     const pc = end;
 
-    // Length of sides
-    const a = geom.distance(pa, pb);
-    const b = geom.distance(pb, pc);
-    const c = geom.distance(pc, pa);
-
-    // Angle opposite point 'b'
-    let angle = Math.acos((c * c + a * a - b * b) / (2 * c * a));
-    if (end.y - start.y > end.x - start.x) {
-      angle = -angle;
-    }
+    const angle = geom.angleInTriangle([pa, pb, pc], 1);
     shape.rotationInRadians = this.startRotation + angle;
 
     this.render();
