@@ -72,8 +72,8 @@ export default class Scene {
 
   addEventListeners() {
     window.addEventListener('resize', this.handleResize);
+    this.canvas.addEventListener('mousedown', this.handleMouseDown);
     document.documentElement.addEventListener('mousemove', this.handleMouseMove);
-    document.documentElement.addEventListener('mousedown', this.handleMouseDown);
     document.documentElement.addEventListener('mouseup', this.handleMouseUp);
 
     const toolbar = document.querySelector('.toolbar');
@@ -82,12 +82,13 @@ export default class Scene {
     toolbar.querySelector('.square-button').addEventListener('click', this.handleClickSquare);
     toolbar.querySelector('.triangle-button').addEventListener('click', this.handleClickTriangle);
     toolbar.querySelector('.star-button').addEventListener('click', this.handleClickStar);
+    toolbar.querySelector('.delete-button').addEventListener('click', this.handleClickDelete);
   }
 
   removeEventListeners() {
     window.removeEventListener('resize', this.handleResize);
+    this.canvas.removeEventListener('mousedown', this.handleMouseDown);
     document.documentElement.removeEventListener('mousemove', this.handleMouseMove);
-    document.documentElement.removeEventListener('mousedown', this.handleMouseDown);
     document.documentElement.removeEventListener('mouseup', this.handleMouseUp);
   }
 
@@ -131,6 +132,16 @@ export default class Scene {
   addShape(shape: Shape) {
     this.shapes.push(shape);
     this.render();
+  }
+
+  removeShape(shape: Shape) {
+    const idx = this.shapes.indexOf(shape);
+    if (idx > -1) {
+      this.shapes.splice(idx, 1);
+    }
+    if (this.focusedShape === shape) {
+      this.focusShape(null);
+    }
   }
 
   shapeAtPoint(x: number, y: number): Shape | null {
@@ -397,6 +408,15 @@ export default class Scene {
   handleClickStar = (ev: Event) => {
     this.mode = Mode.Create;
     this.shapeConstructor = Star;
+    this.focusShape(null);
+  }
+
+  handleClickDelete = (ev: Event) => {
+    if (!this.focusedShape) {
+      return;
+    }
+    this.removeShape(this.focusedShape);
+    this.mode = Mode.Select;
     this.focusShape(null);
   }
 
