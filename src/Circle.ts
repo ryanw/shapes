@@ -1,6 +1,6 @@
-import Shape from './Shape';
+import Shape, { ShapeProperties } from './Shape';
 
-export interface CircleProperties {
+export interface CircleProperties extends ShapeProperties {
   position?: Point;
   radius?: number;
 }
@@ -8,8 +8,12 @@ export interface CircleProperties {
 
 export default class Circle extends Shape {
   constructor(props: CircleProperties = {}) {
+    let radius = props.radius;
+    if (!radius && props.size) {
+      radius = props.size.width / 2;
+    }
     super({
-      size: { width: props.radius * 2, height: props.radius * 2 },
+      size: { width: radius * 2, height: radius * 2 },
       position: props.position,
 
       // You can't rotate a circle

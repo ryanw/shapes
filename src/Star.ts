@@ -1,7 +1,7 @@
-import Shape from './Shape';
+import Shape, { ShapeProperties } from './Shape';
 import { rotatePoint, isPointInsidePolygon } from './geom';
 
-export interface StarProperties {
+export interface StarProperties extends ShapeProperties {
   position?: Point;
   radius?: number;
   rotation?: Degrees;
@@ -12,8 +12,12 @@ export default class Star extends Shape {
   protected pointCount: number;
 
   constructor(props: StarProperties = {}) {
+    let radius = props.radius;
+    if (!radius && props.size) {
+      radius = props.size.width / 2;
+    }
     super({
-      size: { width: props.radius * 2, height: props.radius * 2 },
+      size: { width: radius * 2, height: radius * 2 },
       position: props.position,
       rotation: props.rotation,
     });

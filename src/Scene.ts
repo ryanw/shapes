@@ -1,19 +1,33 @@
 import Shape from './Shape';
 import Rectangle from './Rectangle';
+import Circle from './Circle';
+import Triangle from './Triangle';
+import Star from './Star';
 import Handle, { HandleEvent } from './Handle';
 import * as geom from './geom';
 
+export enum Mode {
+  Select,
+  Create,
+  Scale,
+  Rotate,
+  Move,
+}
+
+
 export default class Scene {
+  private mode: Mode = Mode.Select;
   private canvas: HTMLCanvasElement;
   private shapes: Array<Shape> = [];
   private focusedShape?: Shape;
   private highlightedShape?: Shape;
-  private dragging: boolean = false;
+  private startMousePoint?: Point;
   private prevMousePoint?: Point;
   private rotateControl: Handle;
   private scaleControl: Handle;
   private startSize: Size;
   private startRotation: Degrees;
+  private shapeConstructor: typeof Shape = Rectangle;
 
   public uniformScaling: boolean = true;
 
@@ -28,6 +42,7 @@ export default class Scene {
       onDrag: this.handleDragRotate,
       onEnd: this.handleEndRotate,
     });
+
     this.scaleControl = new Handle({
       className: 'scale-handle',
       onStart: this.handleStartScale,
@@ -60,6 +75,13 @@ export default class Scene {
     document.documentElement.addEventListener('mousemove', this.handleMouseMove);
     document.documentElement.addEventListener('mousedown', this.handleMouseDown);
     document.documentElement.addEventListener('mouseup', this.handleMouseUp);
+
+    const toolbar = document.querySelector('.toolbar');
+    toolbar.querySelector('.select-button').addEventListener('click', this.handleClickSelect);
+    toolbar.querySelector('.circle-button').addEventListener('click', this.handleClickCircle);
+    toolbar.querySelector('.square-button').addEventListener('click', this.handleClickSquare);
+    toolbar.querySelector('.triangle-button').addEventListener('click', this.handleClickTriangle);
+    toolbar.querySelector('.star-button').addEventListener('click', this.handleClickStar);
   }
 
   removeEventListeners() {
@@ -180,44 +202,13 @@ export default class Scene {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  handleResize = (ev: Event) => {
-    this.updateSize();
-  }
-
-  handleMouseMove = (ev: MouseEvent) => {
-    const { clientX: x, clientY: y } = ev;
-    if (this.dragging && this.focusedShape) {
-      const delta = { x: x - this.prevMousePoint.x, y: y - this.prevMousePoint.y };
-      this.focusedShape.position.x += delta.x;
-      this.focusedShape.position.y += delta.y;
-      this.render();
-    } else {
-      this.highlightShape(this.shapeAtPoint(x, y));
-    }
-    this.prevMousePoint = { x, y };
-  }
-
-  handleMouseDown = (ev: MouseEvent) => {
-    const { clientX: x, clientY: y } = ev;
-    this.focusShape(this.shapeAtPoint(x, y));
-    this.dragging = true;
-    this.prevMousePoint = { x, y };
-  }
-
-  handleMouseUp = (ev: MouseEvent) => {
-    this.dragging = false;
-  }
-
-  handleStartRotate = (ev: HandleEvent) => {
+  beginRotation() {
     const shape = this.focusedShape;
     if (!shape) return;
     this.startRotation = shape.rotationInRadians;
   }
 
-  handleDragRotate = (ev: HandleEvent) => {
-    const { delta, mouseX, mouseY } = ev;
-    if (!delta) return;
-
+  updateRotation(start: Point, end: Point) {
     const shape = this.focusedShape;
     if (!shape) return;
 
@@ -225,8 +216,8 @@ export default class Scene {
 
     // Make a triangle from pivot, start mouse position, and current mouse position.
     const pa = shape.position;
-    const pb = { x: mouseX - delta.x, y: mouseY - delta.y };
-    const pc = { x: mouseX, y: mouseY };
+    const pb = start;
+    const pc = end;
 
     // Length of sides
     const a = geom.distance(pa, pb);
@@ -235,7 +226,7 @@ export default class Scene {
 
     // Angle opposite point 'b'
     let angle = Math.acos((c * c + a * a - b * b) / (2 * c * a));
-    if (delta.y > delta.x) {
+    if (end.y - start.y > end.x - start.x) {
       angle = -angle;
     }
     shape.rotationInRadians = this.startRotation + angle;
@@ -243,18 +234,21 @@ export default class Scene {
     this.render();
   }
 
-  handleEndRotate = (ev: HandleEvent) => {
+  stopRotation() {
+    this.mode = Mode.Select;
   }
 
-  handleStartScale = (ev: HandleEvent) => {
+  beginScaling() {
+    this.mode = Mode.Scale;
     const shape = this.focusedShape;
     if (!shape) return;
     this.startSize = { ...shape.size };
   }
 
-  handleDragScale = (ev: HandleEvent) => {
-    const { delta } = ev;
-    if (!delta) return;
+  updateScale(delta: Point) {
+    if (this.mode !== Mode.Scale) {
+      return;
+    }
 
     const shape = this.focusedShape;
     if (!shape) return;
@@ -272,6 +266,138 @@ export default class Scene {
     this.render();
   }
 
-  handleEndScale = (ev: HandleEvent) => {
+  stopScaling() {
+    this.mode = Mode.Select;
+    this.startSize = null;
   }
+
+  handleResize = (ev: Event) => {
+    this.updateSize();
+  }
+
+  handleMouseDown = (ev: MouseEvent) => {
+    const { clientX: x, clientY: y } = ev;
+
+    switch (this.mode) {
+      case Mode.Select:
+        this.focusShape(this.shapeAtPoint(x, y));
+        this.mode = Mode.Move;
+        break;
+
+      case Mode.Create:
+        // Create a new shape
+        const shape = new this.shapeConstructor({
+          position: { x, y },
+          size: { width: 10, height: 10 }
+        });
+        this.addShape(shape);
+        this.focusShape(shape);
+        this.beginScaling();
+        break;
+    }
+
+    this.startMousePoint = { x, y };
+    this.prevMousePoint = { x, y };
+  }
+
+
+  handleMouseMove = (ev: MouseEvent) => {
+    const { clientX: x, clientY: y } = ev;
+
+    switch (this.mode) {
+      case Mode.Select:
+        this.highlightShape(this.shapeAtPoint(x, y));
+        break;
+
+      case Mode.Move:
+        if (this.focusedShape) {
+          ev.preventDefault();
+          // FIXME put in a moveShape() method
+          const delta = { x: x - this.prevMousePoint.x, y: y - this.prevMousePoint.y };
+          this.focusedShape.position.x += delta.x;
+          this.focusedShape.position.y += delta.y;
+          this.render();
+        }
+
+      case Mode.Scale:
+        ev.preventDefault();
+        this.updateScale({ x: x - this.startMousePoint.x, y: y - this.startMousePoint.y });
+        break;
+        // TODO
+    }
+
+    this.prevMousePoint = { x, y };
+  }
+
+  handleMouseUp = (ev: MouseEvent) => {
+    switch (this.mode) {
+      case Mode.Scale:
+        this.stopScaling();
+        break;
+
+      case Mode.Move:
+        this.mode = Mode.Select;
+    }
+  }
+
+  handleStartRotate = (ev: HandleEvent) => {
+    this.beginRotation();
+  }
+
+  handleDragRotate = (ev: HandleEvent) => {
+    const { delta, mouseX, mouseY } = ev;
+    if (!delta) return;
+
+    this.updateRotation({ x: mouseX - delta.x, y: mouseY - delta.y }, { x: mouseX, y: mouseY });
+  }
+
+  handleEndRotate = (ev: HandleEvent) => {
+    this.stopRotation();
+  }
+
+  handleStartScale = (ev: HandleEvent) => {
+    this.beginScaling();
+  }
+
+  handleDragScale = (ev: HandleEvent) => {
+    const { delta } = ev;
+    if (!delta) return;
+
+    this.updateScale(delta);
+  }
+
+  handleEndScale = (ev: HandleEvent) => {
+    this.stopScaling();
+  }
+
+  // Toolbar events
+  handleClickSelect = (ev: Event) => {
+    this.mode = Mode.Select;
+    this.focusShape(null);
+  }
+
+  handleClickCircle = (ev: Event) => {
+    this.mode = Mode.Create;
+    this.shapeConstructor = Circle;
+    this.focusShape(null);
+  }
+
+  handleClickSquare = (ev: Event) => {
+    this.mode = Mode.Create;
+    this.shapeConstructor = Rectangle;
+    this.focusShape(null);
+  }
+
+  handleClickTriangle = (ev: Event) => {
+    this.mode = Mode.Create;
+    this.shapeConstructor = Triangle;
+    this.focusShape(null);
+  }
+
+  handleClickStar = (ev: Event) => {
+    this.mode = Mode.Create;
+    this.shapeConstructor = Star;
+    this.focusShape(null);
+  }
+
 }
