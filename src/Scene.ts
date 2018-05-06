@@ -1,10 +1,19 @@
-import Shape from './Shape';
+import Shape, { ShapeProperties } from './Shape';
 import Rectangle from './Rectangle';
 import Circle from './Circle';
 import Triangle from './Triangle';
 import Star from './Star';
 import Handle, { HandleEvent } from './Handle';
 import * as geom from './geom';
+
+export type ShapeName = 'Rectangle' | 'Circle' | 'Triangle' | 'Star';
+
+const SHAPE_MAP: { [key: string]: typeof Shape } = {
+  'Rectangle': Rectangle,
+  'Circle': Circle,
+  'Triangle': Triangle,
+  'Star': Star,
+}
 
 export enum Mode {
   Select,
@@ -14,6 +23,14 @@ export enum Mode {
   Move,
 }
 
+export interface ShapeRecord {
+  shape: ShapeName;
+  props: ShapeProperties;
+}
+
+export interface SceneProperties {
+  onChange?: () => void;
+}
 
 export default class Scene {
   private mode: Mode = Mode.Select;
@@ -28,10 +45,12 @@ export default class Scene {
   private startSize: Size;
   private startRotation: Degrees;
   private shapeConstructor: typeof Shape = Rectangle;
+  private onChangeCallback?: () => void;
 
   public uniformScaling: boolean = true;
 
-  constructor(container?: HTMLElement) {
+  constructor(props: SceneProperties = {}) {
+    this.onChangeCallback = props.onChange;
     this.canvas = document.createElement('canvas');
     this.canvas.style.width = '100%';
     this.canvas.style.height = '100%';
@@ -50,6 +69,48 @@ export default class Scene {
       onEnd: this.handleEndScale,
     });
     this.hideHandles();
+  }
+
+  importScene(shapes: Array<ShapeRecord>) {
+    this.shapes = shapes.map((record: ShapeRecord): Shape => {
+      const shapeConstructor: typeof Shape = SHAPE_MAP[record.shape];
+      if (!shapeConstructor) {
+        throw new Error(`Unable to find constructor for ${record.shape}`);
+      }
+
+      return new shapeConstructor(record.props);
+    });
+
+    this.render();
+  }
+
+  toJSON(): string {
+    const records = this.shapes.map((shape: Shape): ShapeRecord => {
+      let name: ShapeName;
+      for (let key in SHAPE_MAP) {
+        if (shape instanceof SHAPE_MAP[key]) {
+          name = key as ShapeName;
+          break;
+        }
+      }
+
+      if (!name) {
+        throw new Error(`Unable to serialize shape`);
+      }
+
+      const record: ShapeRecord = {
+        shape: name,
+        props: {
+          position: shape.position,
+          size: shape.size,
+          rotation: shape.rotation,
+        }
+      }
+
+      return record;
+    });
+
+    return JSON.stringify(records);
   }
 
   attachTo(container: HTMLElement) {
@@ -157,6 +218,12 @@ export default class Scene {
     return null;
   }
 
+  change() {
+    if (this.onChangeCallback) {
+      this.onChangeCallback();
+    }
+  }
+
   render() {
     this.clear();
     const context = this.canvas.getContext('2d');
@@ -165,6 +232,7 @@ export default class Scene {
       // Update handle positions
       this.showHandlesOnShape(this.focusedShape);
     }
+    this.change();
   }
 
   getShape(index: number): Shape | undefined {

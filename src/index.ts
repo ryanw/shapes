@@ -1,54 +1,57 @@
-import Scene from './Scene';
+import Scene, { ShapeRecord } from './Scene';
 import Shape from './Shape';
 import Rectangle from './Rectangle';
 import Star from './Star';
 import Circle from './Circle';
 import Triangle from './Triangle';
 
+const DEFAULT_SCENE: Array<ShapeRecord> = [
+  {
+    shape: 'Rectangle',
+    props: {
+      position: { x: 576, y: 176 },
+      size: { width: 150, height: 150 },
+    },
+  },
+  {
+    shape: 'Star',
+    props: {
+      position: { x: 176, y: 176 },
+      size: { width: 75, height: 75 },
+    },
+  },
+  {
+    shape: 'Circle',
+    props: {
+      position: { x: 75, y: 475 },
+      size: { width: 75, height: 75 },
+    },
+  },
+  {
+    shape: 'Triangle',
+    props: {
+      position: { x: 700, y: 500 },
+      size: { width: 250, height: 250 },
+    },
+  },
+];
+
 function main() {
-  const scene = new Scene();
+  const scene = new Scene({
+    onChange: () => {
+      localStorage.setItem('scene', scene.toJSON());
+    }
+  });
+
+  const savedScene = localStorage.getItem('scene');
+  if (savedScene) {
+    scene.importScene(JSON.parse(savedScene));
+  }
+  else {
+    scene.importScene(DEFAULT_SCENE);
+  }
+
   scene.attachTo(document.querySelector('#application'));
-
-  // TODO load from localStorage
-
-  scene.addShape(new Rectangle({
-    position: { x: 576, y: 176 },
-    size: { width: 150, height: 150 },
-  }));
-
-  scene.addShape(new Star({
-    position: { x: 176, y: 176 },
-    radius: 75,
-    points: 5,
-  }));
-
-  scene.addShape(new Circle({
-    position: { x: 75, y: 475 },
-    radius: 75,
-  }));
-
-  scene.addShape(new Triangle({
-    position: { x: 700, y: 700 },
-    size: { width: 250, height: 250 },
-  }));
-
-
-  let i = 1;
-  setInterval(() => {
-    let shape;
-
-    shape = scene.getShape(0);
-    shape.rotation += 1;
-
-    shape = scene.getShape(1);
-    shape.rotation += Math.sin(i) * 3;
-
-    shape = scene.getShape(3);
-    shape.rotation += Math.abs(Math.sin(i)) * 5;
-
-    scene.render();
-    i += 0.1;
-  }, 100000000000000 / 60);
 }
 
 main();

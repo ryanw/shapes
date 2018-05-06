@@ -165,7 +165,7 @@ describe('geom.distance', () => {
 
 describe('geom.angleInTriangle', () => {
   it ('returns the correct angle for each point', () => {
-    const triangle = [
+    const triangle: [Point, Point, Point] = [
       { x: 3, y: 3 },
       { x: 6, y: 6 },
       { x: 7, y: 4 },
