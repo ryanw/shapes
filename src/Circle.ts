@@ -46,6 +46,6 @@ export default class Circle extends Shape {
     y -= this.radius - this.pixelOrigin.y;
 
     const length = Math.sqrt(x * x + y * y);
-    return length < this.radius;
+    return length < Math.abs(this.radius);
   }
 }
