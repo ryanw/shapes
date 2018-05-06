@@ -112,7 +112,16 @@ export default class Scene {
   }
 
   shapeAtPoint(x: number, y: number): Shape | null {
-    return this.shapes.find(shape => shape.isPointInside({ x, y }));
+    // Reverse search becuase top most shape is last in the array
+    for (let i = this.shapes.length - 1; i >= 0; i--) {
+      const shape = this.shapes[i];
+      if (shape.isPointInside({ x, y })) {
+        return shape;
+      }
+    }
+
+    // Not found
+    return null;
   }
 
   render() {
