@@ -8,24 +8,30 @@ export default class Scene {
   private shapes: Array<Shape> = [];
   private focusedShape?: Shape;
   private highlightedShape?: Shape;
-  private rotateHandle: Handle;
-  private scaleHandle: Handle;
+  private rotateControl: Handle;
+  private scaleControl: Handle;
 
   constructor(container?: HTMLElement) {
     this.canvas = document.createElement('canvas');
     this.canvas.style.width = '100%';
     this.canvas.style.height = '100%';
 
-    this.rotateHandle = new Handle({ className: 'rotate-handle' });
-    this.scaleHandle = new Handle({ className: 'scale-handle' });
+    this.rotateControl = new Handle({
+      className: 'rotate-handle',
+      callback: this.handleDragRotate,
+    });
+    this.scaleControl = new Handle({
+      className: 'scale-handle',
+      callback: this.handleDragScale,
+    });
     this.hideHandles();
   }
 
   attachTo(container: HTMLElement) {
     this.addEventListeners();
     container.appendChild(this.canvas);
-    this.rotateHandle.attachTo(container);
-    this.scaleHandle.attachTo(container);
+    this.rotateControl.attachTo(container);
+    this.scaleControl.attachTo(container);
 
     this.updateSize();
   }
@@ -35,8 +41,8 @@ export default class Scene {
 
     const parent = this.canvas.parentNode;
     parent.removeChild(this.canvas);
-    this.rotateHandle.remove();
-    this.scaleHandle.remove();
+    this.rotateControl.remove();
+    this.scaleControl.remove();
   }
 
   addEventListeners() {
@@ -52,13 +58,13 @@ export default class Scene {
   }
 
   showHandles() {
-    this.rotateHandle.show();
-    this.scaleHandle.show();
+    this.rotateControl.show();
+    this.scaleControl.show();
   }
 
   hideHandles() {
-    this.rotateHandle.hide();
-    this.scaleHandle.hide();
+    this.rotateControl.hide();
+    this.scaleControl.hide();
   }
 
   showHandlesOnShape(shape: Shape) {
@@ -72,11 +78,11 @@ export default class Scene {
     // Move to top left of shape
     x -= shape.pixelOrigin.x;
     y -= shape.pixelOrigin.y;
-    this.rotateHandle.position = { x, y };
+    this.rotateControl.position = { x, y };
 
     x += width;
     y += height;
-    this.scaleHandle.position = { x, y };
+    this.scaleControl.position = { x, y };
 
     // Scale using bottom right
     this.showHandles();
@@ -165,5 +171,23 @@ export default class Scene {
   handleMouseDown = (ev: MouseEvent) => {
     const { clientX: x, clientY: y } = ev;
     this.focusShape(this.shapeAtPoint(x, y));
+  }
+
+  handleDragRotate = (delta: Point) => {
+  }
+
+  handleDragScale = (delta: Point) => {
+    const shape = this.focusedShape;
+    if (!shape) return;
+
+    shape.size.width += delta.x * 2;
+    shape.size.height += delta.y * 2;
+
+    // We only require uniform scaling, so use smallest axis
+    const size = Math.min(shape.size.width, shape.size.height);
+    shape.size.width = size;
+    shape.size.height = size;
+
+    this.render();
   }
 }

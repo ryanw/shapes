@@ -10,18 +10,24 @@ export interface StarProperties {
 
 export default class Star extends Shape {
   protected pointCount: number;
-  protected radius: number;
 
   constructor(props: StarProperties = {}) {
-    const radius = props.radius || 100;
     super({
-      size: { width: radius * 2, height: radius * 2 },
+      size: { width: props.radius * 2, height: props.radius * 2 },
       position: props.position,
       rotation: props.rotation,
     });
 
-    this.radius = radius;
     this.pointCount = props.points || 5;
+  }
+
+  get radius(): number {
+    return this.size.width / 2;
+  }
+
+  set radius(r: number) {
+    this.size.width = r * 2;
+    this.size.height = r * 2;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
