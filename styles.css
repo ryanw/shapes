@@ -39,7 +39,7 @@ html, body {
 .scale-handle::before {
   line-height: 16px;
   text-align: center;
-  content: "🡶";
+  content: "↘";
   cursor: nwse-resize;
 }
 

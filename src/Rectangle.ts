@@ -17,7 +17,6 @@ export default class Rectangle extends Shape {
 
   isPointInside(point: Point): boolean {
     const { width, height } = this.size;
-    const angle = -this.rotationInRadians;
     let { x, y } = this.pointToLocalSpace(point);
     x += this.pixelOrigin.x;
     y += this.pixelOrigin.y;

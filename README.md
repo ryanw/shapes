@@ -45,4 +45,4 @@ current `Mode`.
 
 Most shapes could be replaced with a single `Polygon` shape and a list of vertices.
 
-Could probably do with more comments.
+The code could probably do with more comments.
