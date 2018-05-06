@@ -1,6 +1,6 @@
 import Shape from './Shape';
 import Rectangle from './Rectangle';
-import Handle from './Handle';
+import Handle, { HandleEvent } from './Handle';
 import * as geom from './geom';
 
 export default class Scene {
@@ -10,6 +10,10 @@ export default class Scene {
   private highlightedShape?: Shape;
   private rotateControl: Handle;
   private scaleControl: Handle;
+  private startSize: Size;
+  private startRotation: Degrees;
+
+  public uniformScaling: boolean = true;
 
   constructor(container?: HTMLElement) {
     this.canvas = document.createElement('canvas');
@@ -18,11 +22,15 @@ export default class Scene {
 
     this.rotateControl = new Handle({
       className: 'rotate-handle',
-      callback: this.handleDragRotate,
+      onStart: this.handleStartRotate,
+      onDrag: this.handleDragRotate,
+      onEnd: this.handleEndRotate,
     });
     this.scaleControl = new Handle({
       className: 'scale-handle',
-      callback: this.handleDragScale,
+      onStart: this.handleStartScale,
+      onDrag: this.handleDragScale,
+      onEnd: this.handleEndScale,
     });
     this.hideHandles();
   }
@@ -173,21 +181,44 @@ export default class Scene {
     this.focusShape(this.shapeAtPoint(x, y));
   }
 
-  handleDragRotate = (delta: Point) => {
+  handleStartRotate = (ev: HandleEvent) => {
+    const shape = this.focusedShape;
+    if (!shape) return;
+    this.startRotation = shape.rotation;
   }
 
-  handleDragScale = (delta: Point) => {
+  handleDragRotate = (ev: HandleEvent) => {
+  }
+
+  handleEndRotate = (ev: HandleEvent) => {
+  }
+
+  handleStartScale = (ev: HandleEvent) => {
+    const shape = this.focusedShape;
+    if (!shape) return;
+    this.startSize = { ...shape.size };
+  }
+
+  handleDragScale = (ev: HandleEvent) => {
+    const { delta } = ev;
+    if (!delta) return;
+
     const shape = this.focusedShape;
     if (!shape) return;
 
-    shape.size.width += delta.x * 2;
-    shape.size.height += delta.y * 2;
+    shape.size.width = this.startSize.width + delta.x * 2;
+    shape.size.height = this.startSize.height + delta.y * 2;
 
-    // We only require uniform scaling, so use smallest axis
-    const size = Math.min(shape.size.width, shape.size.height);
-    shape.size.width = size;
-    shape.size.height = size;
+    // If we only require uniform scaling use the smallest axis;
+    if (this.uniformScaling) {
+      const size = Math.min(shape.size.width, shape.size.height);
+      shape.size.width = size;
+      shape.size.height = size;
+    }
 
     this.render();
+  }
+
+  handleEndScale = (ev: HandleEvent) => {
   }
 }

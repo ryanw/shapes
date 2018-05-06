@@ -1,19 +1,32 @@
-export type DragCallback = (delta: Point) => void;
+
+export interface HandleEvent {
+  delta?: Point;
+}
+
+export type HandleCallback = (ev: HandleEvent) => void;
+
 export interface HandleProps {
   className?: string;
-  callback?: DragCallback;
+  onStart?: HandleCallback;
+  onDrag?: HandleCallback;
+  onEnd?: HandleCallback;
 }
+
 
 export default class Handle {
   private _position: Point;
-  private _prevMousePoint?: Point;
-  dragCallback?: DragCallback;
+  private _startMousePoint?: Point;
+  startCallback?: HandleCallback;
+  dragCallback?: HandleCallback;
+  endCallback?: HandleCallback;
   el: HTMLElement;
 
   constructor(props: HandleProps = {}) {
     this.el = document.createElement('div');
     this.el.className = `handle ${props.className || ''}`;
-    this.dragCallback = props.callback;
+    this.dragCallback = props.onDrag;
+    this.startCallback = props.onStart;
+    this.endCallback = props.onEnd;
     this.position = { x: 0, y: 0 };
   }
 
@@ -62,26 +75,29 @@ export default class Handle {
     document.documentElement.addEventListener('mousemove', this.handleMouseMove);
     document.documentElement.addEventListener('mouseup', this.handleMouseUp);
 
-    this._prevMousePoint = { x: ev.clientX, y: ev.clientY };
+    this._startMousePoint = { x: ev.clientX, y: ev.clientY };
+    if (this.startCallback) {
+      this.startCallback({});
+    }
   }
 
   handleMouseMove = (ev: MouseEvent) => {
     const delta = {
-      x: ev.clientX - this._prevMousePoint.x,
-      y: ev.clientY - this._prevMousePoint.y,
+      x: ev.clientX - this._startMousePoint.x,
+      y: ev.clientY - this._startMousePoint.y,
     }
     if (this.dragCallback) {
-      this.dragCallback(delta);
+      this.dragCallback({ delta });
     }
-
-
-    this._prevMousePoint = { x: ev.clientX, y: ev.clientY };
   }
 
   handleMouseUp = (ev: MouseEvent) => {
     document.documentElement.removeEventListener('mousemove', this.handleMouseMove);
     document.documentElement.removeEventListener('mouseup', this.handleMouseUp);
 
-    this._prevMousePoint = null;
+    this._startMousePoint = null;
+    if (this.endCallback) {
+      this.endCallback({});
+    }
   }
 }
