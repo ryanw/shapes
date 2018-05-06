@@ -12,3 +12,22 @@ html, body {
   right: 0;
   background: #111;
 }
+
+.handle {
+  position: absolute;
+  background: #fff;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  margin-top: -8px;
+  opacity: 0.5;
+}
+.handle:hover {
+  opacity: 1.0;
+}
+
+.rotate-handle {
+}
+
+.scale-handle {
+}

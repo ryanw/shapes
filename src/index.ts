@@ -32,6 +32,7 @@ function main() {
     size: { width: 150, height: 450 },
   }));
 
+
   let i = 1;
   setInterval(() => {
     let shape;
