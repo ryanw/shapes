@@ -250,7 +250,7 @@ export default class Scene {
       }
     }
     else {
-      label += 'Edit';
+      label += 'Select Shapes';
     }
 
     const context = this.canvas.getContext('2d');
