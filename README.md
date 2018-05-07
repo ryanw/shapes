@@ -62,7 +62,7 @@ into JSON that can later be loaded back using the `Scene#importScene()` method.
 
 ### Shape
 
-All shapes must extend from the `Shape` class. It is responsible for appling
+All shapes must extend from the `Shape` class. It is responsible for applying
 the transform matrix to the canvas before drawing.
 
 In a subclass you usually won't need to worry about how the shape is rotated or
@@ -84,6 +84,10 @@ The `Scene` class is quite large. It could be split into multiple smaller classe
 Possibly one to handle and the DOM manipulation, another to handle shape
 management, and a few delegates to handle mouse events depending on the
 current `Mode`.
+
+To test for collisions with the mouse we're looping over every shape in the
+scene. This could be optimised by storing the shapes in a more optimised data
+structure, perhaps a binary tree.
 
 The toolbar should have a proper class to handle its events. As it stands it
 assumes that the HTML will contain the correct markup for it.
