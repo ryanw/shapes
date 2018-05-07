@@ -43,6 +43,9 @@ Possibly one to handle and the DOM manipulation, another to handle shape
 management, and a few delegates to handle mouse events depending on the
 current `Mode`.
 
+The toolbar should have a proper class to handle its events. As it stands it
+assumes that the HTML will contain the correct markup for it.
+
 Most shapes could be replaced with a single `Polygon` shape and a list of vertices.
 
 The code could probably do with more comments.
