@@ -48,4 +48,6 @@ assumes that the HTML will contain the correct markup for it.
 
 Most shapes could be replaced with a single `Polygon` shape and a list of vertices.
 
+Scaling a shape to a negative size swaps the corners that the controls are on.
+
 The code could probably do with more comments.
