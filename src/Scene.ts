@@ -226,6 +226,7 @@ export default class Scene {
 
   render() {
     this.clear();
+    this.drawMode();
     const context = this.canvas.getContext('2d');
     this.shapes.forEach(shape => shape.render(context));
     if (this.focusedShape) {
@@ -233,6 +234,29 @@ export default class Scene {
       this.showHandlesOnShape(this.focusedShape);
     }
     this.change();
+  }
+
+  drawMode() {
+    let label = 'Mode: ';
+
+    if (this.mode === Mode.Create) {
+      label += 'Create a ';
+
+      for (let key in SHAPE_MAP) {
+        if (this.shapeConstructor === SHAPE_MAP[key]) {
+          label += key;
+          break;
+        }
+      }
+    }
+    else {
+      label += 'Edit';
+    }
+
+    const context = this.canvas.getContext('2d');
+    context.font = '32px sans-serif';
+    context.fillStyle = 'white';
+    context.fillText(label, 10, 50);
   }
 
   getShape(index: number): Shape | undefined {
@@ -444,30 +468,35 @@ export default class Scene {
   handleClickSelect = (ev: Event) => {
     this.mode = Mode.Select;
     this.focusShape(null);
+    this.render();
   }
 
   handleClickCircle = (ev: Event) => {
     this.mode = Mode.Create;
     this.shapeConstructor = Circle;
     this.focusShape(null);
+    this.render();
   }
 
   handleClickSquare = (ev: Event) => {
     this.mode = Mode.Create;
     this.shapeConstructor = Rectangle;
     this.focusShape(null);
+    this.render();
   }
 
   handleClickTriangle = (ev: Event) => {
     this.mode = Mode.Create;
     this.shapeConstructor = Triangle;
     this.focusShape(null);
+    this.render();
   }
 
   handleClickStar = (ev: Event) => {
     this.mode = Mode.Create;
     this.shapeConstructor = Star;
     this.focusShape(null);
+    this.render();
   }
 
   handleClickDelete = (ev: Event) => {
@@ -477,6 +506,7 @@ export default class Scene {
     this.removeShape(this.focusedShape);
     this.mode = Mode.Select;
     this.focusShape(null);
+    this.render();
   }
 
 }
