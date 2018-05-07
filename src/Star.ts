@@ -87,7 +87,6 @@ export default class Star extends Shape {
   }
 
   isPointInside(point: Point): boolean {
-    const x = this.pointToLocalSpace(point);
     return isPointInsidePolygon(this.pointToLocalSpace(point), this.asPolygon());
   }
 
