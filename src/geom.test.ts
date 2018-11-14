@@ -60,6 +60,46 @@ describe('geom.rotatePoint', () => {
     expect(x).toBeCloseTo(-100, 5);
     expect(y).toBeCloseTo(-200, 5);
   });
+
+  it("should rotate a point 122 degrees clockwise", () => {
+    const angle = -122;
+    const point: Point = { x: 100, y: 200 };
+    const { x, y } = geom.rotatePoint(point, { x: 0, y: 0 }, angle * Math.PI / 180);
+
+    // Test approximate angle
+    expect(x).toBeCloseTo(116.61769, 5);
+    expect(y).toBeCloseTo(-190.78866, 5);
+  });
+
+  it("should rotate a point 122 degrees anticlockwise", () => {
+    const angle = 122;
+    const point: Point = { x: 100, y: 200 };
+    const { x, y } = geom.rotatePoint(point, { x: 0, y: 0 }, angle * Math.PI / 180);
+
+    // Test approximate angle
+    expect(x).toBeCloseTo(-222.60155, 5);
+    expect(y).toBeCloseTo(-21.179043, 5);
+  });
+
+  it("should rotate a point 13 degrees clockwise", () => {
+    const angle = -13;
+    const point: Point = { x: 100, y: 200 };
+    const { x, y } = geom.rotatePoint(point, { x: 0, y: 0 }, angle * Math.PI / 180);
+
+    // Test approximate angle
+    expect(x).toBeCloseTo(142.42722, 5);
+    expect(y).toBeCloseTo(172.37891, 5);
+  });
+
+  it("should rotate a point 13 degrees anticlockwise", () => {
+    const angle = 13;
+    const point: Point = { x: 100, y: 200 };
+    const { x, y } = geom.rotatePoint(point, { x: 0, y: 0 }, angle * Math.PI / 180);
+
+    // Test approximate angle
+    expect(x).toBeCloseTo(52.44680, 5);
+    expect(y).toBeCloseTo(217.36912, 5);
+  });
 });
 
 describe('geom.isPointInsidePolygon', () => {
